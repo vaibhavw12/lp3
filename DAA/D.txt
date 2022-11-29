@@ -1,0 +1,208 @@
+#Fib_recursion:
+
+def recur_fibo(n):  
+   if n <= 1:  
+       return n  
+   else:  
+       return(recur_fibo(n-1) + recur_fibo(n-2))  
+# take input from the user  
+nterms = int(input("How many terms ? "))  
+# check if the number of terms is valid  
+if nterms <= 0:  
+   print("Plese enter a positive integer")  
+else:  
+   print("Fibonacci sequence:")  
+   for i in range(nterms):  
+       print(recur_fibo(i))  
+-----------------------------------------------------------------
+#Fibonacci Series in non-recursion way:
+
+a=int(input("Enter the first number of the series "))
+b=int(input("Enter the second number of the series "))
+n=int(input("Enter the number of terms needed "))
+print(a,b,end=" ")
+while(n-2):
+ c=a+b
+ a=b
+ b=c
+ print(c,end=" ")
+ n=n-1
+--------------------------------------------------------------------------
+#Huffman encoding:
+
+# PR -2 Huffman
+
+from collections import Counter
+# BCAADDDCCACACAC
+# string = ""
+string = input("Enter String: ")
+
+
+freq=Counter(string)
+nodes=sorted(freq.items(),key=lambda x:x[1],reverse=True)
+class NodeTree:
+    def __init__(self,left=None,right=None):
+        self.left=left
+        self.right=right
+while len(nodes)>1:
+    (key1,c1)=nodes[-1]
+    (key2,c2)=nodes[-2]
+    nodes=nodes[:-2]
+    node=NodeTree(key1,key2)
+    nodes.append((node,c1+c2))
+    nodes=sorted(nodes,key=lambda x:x[1],reverse=True)
+
+def haftree(nodes,left=True,binstring=''):
+    if type(nodes) is str:
+        return {nodes:binstring}
+    l,r=nodes.left,nodes.right
+    b=dict()
+    b.update(haftree(l,True,binstring+"0"))
+    b.update(haftree(r,False,binstring+"1"))
+    return b
+
+p=haftree(nodes[0][0])
+print(p)
+
+
+
+
+--------------------------------------------------------------------------------------------
+#Fractional Knapsack using greedy method:
+
+class Item:
+	def __init__(self, value, weight):
+		self.value = value
+		self.weight = weight
+
+# Main greedy function to solve problem
+def fractionalKnapsack(W, arr):
+
+	# sorting Item on basis of ratio
+	arr.sort(key=lambda x: (x.value/x.weight), reverse=True)
+
+	# Uncomment to see new order of Items with their
+	# ratio
+	# for item in arr:
+	#	 print(item.value, item.weight, item.value/item.weight)
+
+	# Result(value in Knapsack)
+	finalvalue = 0.0
+
+	# Looping through all Items
+	for item in arr:
+
+		# If adding Item won't overflow, add it completely
+		if item.weight <= W:
+			W -= item.weight
+			finalvalue += item.value
+
+		# If we can't add current Item, add fractional part
+		# of it
+		else:
+			finalvalue += item.value * W / item.weight
+			break
+	# Returning final value
+	return finalvalue
+
+
+# Driver's Code
+if __name__ == "__main__":
+
+	# Weight of Knapsack
+	W = 50
+	arr = [Item(60, 10), Item(100, 20), Item(120, 30)]
+
+	# Function call
+	max_val = fractionalKnapsack(W, arr)
+	print ('Maximum value we can obtain = {}'.format(max_val))
+----------------------------------------------------------------------------------------------
+# 0-1 knapsack problem using dynamic 
+
+# A naive recursive implementation
+# of 0-1 Knapsack Problem
+
+# Returns the maximum value that
+# can be put in a knapsack of
+# capacity W
+
+
+def knapSack(W, wt, val, n):
+
+	# Base Case
+	if n == 0 or W == 0:
+		return 0
+
+	# If weight of the nth item is
+	# more than Knapsack of capacity W,
+	# then this item cannot be included
+	# in the optimal solution
+	if (wt[n-1] > W):
+		return knapSack(W, wt, val, n-1)
+
+	# return the maximum of two cases:
+	# (1) nth item included
+	# (2) not included
+	else:
+		return max(
+			val[n-1] + knapSack(
+				W-wt[n-1], wt, val, n-1),
+			knapSack(W, wt, val, n-1))
+
+# end of function knapSack
+
+
+#Driver Code
+val = [60, 100, 120]
+wt = [10, 20, 30]
+W = 50
+n = len(val)
+print (knapSack(W, wt, val, n))
+-----------------------------------------------------------------------------------------------------------------
+# N-Queen problem
+
+#Number of queens
+print ("Enter the number of queens")
+N = int(input())
+
+#chessboard
+#NxN matrix with all elements 0
+board = [[0]*N for _ in range(N)]
+
+def is_attack(i, j):
+    #checking if there is a queen in row or column
+    for k in range(0,N):
+        if board[i][k]==1 or board[k][j]==1:
+            return True
+    #checking diagonals
+    for k in range(0,N):
+        for l in range(0,N):
+            if (k+l==i+j) or (k-l==i-j):
+                if board[k][l]==1:
+                    return True
+    return False
+
+def N_queen(n):
+    #if n is 0, solution found
+    if n==0:
+        return True
+    for i in range(0,N):
+        for j in range(0,N):
+            '''checking if we can place a queen here or not
+            queen will not be placed if the place is being attacked
+            or already occupied'''
+            if (not(is_attack(i,j))) and (board[i][j]!=1):
+                board[i][j] = 1
+                #recursion
+                #wether we can put the next queen with this arrangment or not
+                if N_queen(n-1)==True:
+                    return True
+                board[i][j] = 0
+
+    return False
+
+N_queen(N)
+for i in board:
+    print (i)
+-------------------------------------------------------------------------------------------------------------------
+https://github.com/omkarbhusnale/LP3
