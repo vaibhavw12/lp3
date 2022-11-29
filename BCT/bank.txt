@@ -1,40 +1,44 @@
-//SPDX-License-Identifier: MIT 
-pragma solidity ^0.8.6;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.6.2 <0.9.0;
 
-contract MarksManagmtSys {
-    
-    // Structure for student details 
-    struct Student { 
-        int ID; string fName; string lName; int marks;
-    } 
+contract SimpleBank {
+    uint8 private clientCount;
+    mapping (address => uint) private balances;
+    //address public owner;
 
-    address owner; 
-    int public stdCount = 0; 
+    // Log the event about a deposit being made by an address and its amount
+    event LogDepositMade(address indexed accountAddress, uint amount);
 
-    // Map student data into Record Block
-    mapping(int => Student) public stdRecords;
+    // Constructor is "payable" so it can receive the initial funding of 30,
+    // required to reward the first 3 clients
     
-    modifier onlyOwner { 
-        require(owner == msg.sender);_; 
-    } 
-    
-    constructor(){ 
-        owner = msg.sender;
+   
+
+    /// @notice Deposit ether into bank, requires method is "payable"
+    /// @return The balance of the user after the deposit is made
+    function deposit() public payable returns (uint) {
+        balances[msg.sender] += msg.value;
+        emit LogDepositMade(msg.sender, msg.value);
+        return balances[msg.sender];
     }
 
-    function addNewRecords(int _ID, string memory _fName, string memory _lName, int _marks) public onlyOwner {
-        
-        // Increase the student count
-        stdCount = stdCount + 1;
-
-        // Fetch the student details with the help of stdCount 
-        stdRecords[stdCount] = Student(_ID, _fName,_lName, _marks);
+    /// @notice Withdraw ether from bank
+    /// @return remainingBal The balance remaining for the user
+    function withdraw(uint withdrawAmount) public returns (uint remainingBal) {
+        // Check enough balance available, otherwise just return balance
+        if (withdrawAmount <= balances[msg.sender]) {
+            balances[msg.sender] -= withdrawAmount;
+            payable(msg.sender).transfer(withdrawAmount);
+        }
+        return balances[msg.sender];
     }
 
-    // Function to add bonus marks
-    function bonusMarks(int _bonus) public onlyOwner { 
-
-        stdRecords[stdCount].marks = stdRecords[stdCount].marks + _bonus;
-
+    /// @notice Just reads balance of the account requesting, so "constant"
+    /// @return The balance of the user
+    function balance() public view returns (uint) {
+        return balances[msg.sender];
     }
+
+    
+    
 }
